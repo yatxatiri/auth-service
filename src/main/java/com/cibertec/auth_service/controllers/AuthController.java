@@ -7,6 +7,7 @@ import com.cibertec.auth_service.dtos.AuthResponse;
 import com.cibertec.auth_service.dtos.RegisterRequest;
 import com.cibertec.auth_service.services.AuthService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registeResponseEntity(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> registeResponseEntity(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
     
