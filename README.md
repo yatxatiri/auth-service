@@ -3,6 +3,7 @@
 ### Endpoints
 
 - **POST** `/api/auth/register`
+- **POST** `/api/auth/login`
 
 ### Configuración
 
@@ -10,7 +11,7 @@ Hay tres variables de entorno opcionales:
 
 - `DB_USER`
 - `DB_PASS`
-- `JWT_TOKEN` (Por el momento el _token secret_ esta en duro en el [Servicio de JWT](./src/main/java/com/cibertec/auth_service/services/JwtService.java))
+- `JWT_TOKEN` (cadena hexadecimal de 256 bits)
 
 ### Probar el servicio
 
