@@ -3,31 +3,48 @@ package com.cibertec.auth_service.services;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cibertec.auth_service.entities.User;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-    private static final String SECRET_KEY = "2060f61b05846c956e142232a8f92521069c33defcd8de42946c29c876f188e9";
+	
+	@Value("${jwt.secret}")
+    private String secretKey;
 
-    public String generateToken(User user) {
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
     
-        return Jwts.builder()
-            .setSubject(user.getEmail())
-            .claim("role", user.getType())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-            .signWith(getSignInKey())
-            .compact();
+    public String generateToken(User user) {
+        return buildToken(user, jwtExpiration);
+    }
+    
+    public String generateRefreshToken(User user) {
+    	return buildToken(user, refreshExpiration);
     }
 
-    private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    
+    private String buildToken(User user, Long expiration) {
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("role", user.getType())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 }
