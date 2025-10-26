@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cibertec.auth_service.dtos.AuthResponse;
+import com.cibertec.auth_service.dtos.LoginRequest;
 import com.cibertec.auth_service.dtos.RegisterRequest;
 import com.cibertec.auth_service.services.AuthService;
 
@@ -25,6 +26,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> registeResponseEntity(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
     
 }
