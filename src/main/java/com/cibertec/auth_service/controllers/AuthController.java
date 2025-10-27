@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cibertec.auth_service.dtos.AuthResponse;
 import com.cibertec.auth_service.dtos.LoginRequest;
 import com.cibertec.auth_service.dtos.RegisterRequest;
+import com.cibertec.auth_service.dtos.UserResponse;
 import com.cibertec.auth_service.services.AuthService;
 
 import jakarta.validation.Valid;
@@ -14,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 
 @RestController
@@ -32,5 +36,10 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
-    
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        return ResponseEntity.ok(authService.getCurrentUser(token));
+    }
 }

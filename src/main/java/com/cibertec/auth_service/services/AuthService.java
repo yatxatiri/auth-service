@@ -5,9 +5,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cibertec.auth_service.configs.JwtService;
 import com.cibertec.auth_service.dtos.AuthResponse;
 import com.cibertec.auth_service.dtos.LoginRequest;
 import com.cibertec.auth_service.dtos.RegisterRequest;
+import com.cibertec.auth_service.dtos.UserResponse;
 import com.cibertec.auth_service.entities.User;
 import com.cibertec.auth_service.repositories.UserRepository;
 
@@ -65,4 +67,23 @@ public class AuthService {
     			.build();
     }
 
+    public UserResponse getCurrentUser(String token) {
+
+        String email = jwtService.extractEmail(token);
+
+        User user = userRepository.findByEmail(email)
+    			.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .documentType(user.getDocumentType())
+                .type(user.getType())
+                .number(user.getNumber())
+                .address(user.getAddress())
+                .telephone(user.getTelephone())
+                .active(user.isActive())
+                .build();
+    }
 }
