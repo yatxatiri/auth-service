@@ -1,6 +1,8 @@
 package com.cibertec.auth_service.services;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {
 
@@ -51,12 +54,15 @@ public class AuthService {
     
     public AuthResponse login(LoginRequest request) {
     	
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getEmail(), 
+                request.getPassword()
+            )
+        );
+
     	User user = userRepository.findByEmail(request.getEmail())
     			.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-    	
-    	if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new BadCredentialsException("Credenciales de usuario inválidas");
-		}
     	
     	String token = jwtService.generateToken(user);
     	String refreshToken = jwtService.generateRefreshToken(user);
