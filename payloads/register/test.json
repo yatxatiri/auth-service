@@ -1,0 +1,10 @@
+{
+  "name": "Jhon Doe",
+  "email": "jhondoe.test@gmail.com",
+  "password": "Prueba",
+  "type": "admin",
+  "documentType": "6",
+  "number": "936126108",
+  "address": "Tilda 120",
+  "telephone": "(01)422-233"
+}
