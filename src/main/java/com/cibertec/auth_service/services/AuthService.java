@@ -29,6 +29,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
+            // TODO: change exception to more specifically
             throw new RuntimeException("El email " + request.getEmail() + " ya está registrado");
         }     
 
@@ -73,8 +74,14 @@ public class AuthService {
     			.build();
     }
 
-    public UserResponse getCurrentUser(String token) {
+    public UserResponse getCurrentUser(String authHeader) {
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Header de autorización inválido");
+        }
+    
+        String token = authHeader.replace("Bearer ", "");
+        
         String email = jwtService.extractEmail(token);
 
         User user = userRepository.findByEmail(email)
@@ -90,6 +97,27 @@ public class AuthService {
                 .address(user.getAddress())
                 .telephone(user.getTelephone())
                 .active(user.isActive())
+                .build();
+    }
+
+    public AuthResponse refreshToken(String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Header de autorización inválido");
+        }
+
+        String refreshToken = authHeader.replace("Bearer ", "");
+
+        String email = jwtService.extractEmail(refreshToken);
+
+        User user = userRepository.findByEmail(email)
+    			.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        String accesToken = jwtService.generateRefreshToken(user);
+
+        return AuthResponse.builder()
+                .accessToken(accesToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }
