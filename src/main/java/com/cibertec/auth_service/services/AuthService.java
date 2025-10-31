@@ -77,15 +77,22 @@ public class AuthService {
     public UserResponse getCurrentUser(String authHeader) {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Header de autorización inválido");
+            throw new IllegalArgumentException("Cabecera de autorización inválido");
         }
     
         String token = authHeader.replace("Bearer ", "");
-        
         String email = jwtService.extractEmail(token);
+
+        if (email == null) {
+            throw new IllegalArgumentException("Token de refresco inválido");
+        }
 
         User user = userRepository.findByEmail(email)
     			.orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        if (jwtService.isTokenValid(user, token)) {
+            throw new IllegalArgumentException("Token de refresco inválido");
+        }
 
         return UserResponse.builder()
                 .id(user.getId())

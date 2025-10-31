@@ -5,6 +5,7 @@
 - **POST** `/api/auth/register`
 - **POST** `/api/auth/login`
 - **GET** `/api/auth/me` — requiere incluir una cabecera de **autorización** con un _access token_ no revocado.
+- **POST** `/api/auth/refresh-token` — requiere cabecera de autorización con un _refresh token_ no expirado.
 
 ### Configuración
 
